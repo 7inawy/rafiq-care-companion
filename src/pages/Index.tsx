@@ -5,12 +5,15 @@ import OTPScreen from '@/components/Auth/OTPScreen';
 import DashboardScreen from '@/components/Dashboard/DashboardScreen';
 import NICUFinder from '@/components/NICU/NICUFinder';
 import VaccinationScreen from '@/components/Vaccination/VaccinationScreen';
+import DoctorDirectoryScreen from '@/components/Doctor/DoctorDirectoryScreen';
+import DoctorProfileScreen from '@/components/Doctor/DoctorProfileScreen';
 
-type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'vaccinations' | 'add-record' | 'book-doctor' | 'symptom-checker';
+type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'vaccinations' | 'add-record' | 'book-doctor' | 'symptom-checker' | 'doctor-directory' | 'doctor-profile' | 'book-appointment';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('login');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [selectedDoctorId, setSelectedDoctorId] = useState<string>('');
   const [selectedChild] = useState({
     id: '1',
     name: 'سارة',
@@ -21,6 +24,11 @@ const Index = () => {
   const handleScreenTransition = (screen: AppScreen, phone?: string) => {
     setCurrentScreen(screen);
     if (phone) setPhoneNumber(phone);
+  };
+
+  const handleDoctorSelect = (doctorId: string) => {
+    setSelectedDoctorId(doctorId);
+    setCurrentScreen('doctor-profile');
   };
 
   const renderScreen = () => {
@@ -44,7 +52,13 @@ const Index = () => {
       case 'dashboard':
         return (
           <DashboardScreen 
-            onNavigate={(screen) => handleScreenTransition(screen as AppScreen)}
+            onNavigate={(screen) => {
+              if (screen === 'book-doctor') {
+                handleScreenTransition('doctor-directory');
+              } else {
+                handleScreenTransition(screen as AppScreen);
+              }
+            }}
           />
         );
       
@@ -60,6 +74,26 @@ const Index = () => {
           <VaccinationScreen
             onBack={() => handleScreenTransition('dashboard')}
             selectedChild={selectedChild}
+          />
+        );
+
+      case 'doctor-directory':
+        return (
+          <DoctorDirectoryScreen
+            onBack={() => handleScreenTransition('dashboard')}
+            onDoctorSelect={handleDoctorSelect}
+          />
+        );
+
+      case 'doctor-profile':
+        return (
+          <DoctorProfileScreen
+            doctorId={selectedDoctorId}
+            onBack={() => handleScreenTransition('doctor-directory')}
+            onBookAppointment={(doctorId) => {
+              setSelectedDoctorId(doctorId);
+              handleScreenTransition('book-appointment');
+            }}
           />
         );
       

@@ -31,18 +31,18 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => {
       color: 'bg-green-50 border-green-100 hover:bg-green-100'
     },
     {
+      id: 'book-doctor',
+      title: 'حجز طبيب',
+      icon: '👩‍⚕️',
+      description: 'البحث وحجز موعد مع طبيب أطفال',
+      color: 'bg-purple-50 border-purple-100 hover:bg-purple-100'
+    },
+    {
       id: 'add-record',
       title: 'إضافة سجل',
       icon: '📝',
       description: 'تسجيل معلومات صحية جديدة',
       color: 'bg-blue-50 border-blue-100 hover:bg-blue-100'
-    },
-    {
-      id: 'book-doctor',
-      title: 'حجز طبيب',
-      icon: '👩‍⚕️',
-      description: 'حجز موعد مع طبيب أطفال',
-      color: 'bg-purple-50 border-purple-100 hover:bg-purple-100'
     }
   ];
 
