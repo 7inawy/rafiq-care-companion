@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import LoginScreen from '@/components/Auth/LoginScreen';
 import OTPScreen from '@/components/Auth/OTPScreen';
@@ -7,8 +6,10 @@ import NICUFinder from '@/components/NICU/NICUFinder';
 import VaccinationScreen from '@/components/Vaccination/VaccinationScreen';
 import DoctorDirectoryScreen from '@/components/Doctor/DoctorDirectoryScreen';
 import DoctorProfileScreen from '@/components/Doctor/DoctorProfileScreen';
+import GrowthScreen from '@/components/Growth/GrowthScreen';
+import MedicationScreen from '@/components/Medication/MedicationScreen';
 
-type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'vaccinations' | 'add-record' | 'book-doctor' | 'symptom-checker' | 'doctor-directory' | 'doctor-profile' | 'book-appointment';
+type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'vaccinations' | 'add-record' | 'book-doctor' | 'symptom-checker' | 'doctor-directory' | 'doctor-profile' | 'book-appointment' | 'growth-charts' | 'medications';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('login');
@@ -94,6 +95,20 @@ const Index = () => {
               setSelectedDoctorId(doctorId);
               handleScreenTransition('book-appointment');
             }}
+          />
+        );
+      
+      case 'growth-charts':
+        return (
+          <GrowthScreen
+            onBack={() => handleScreenTransition('dashboard')}
+          />
+        );
+      
+      case 'medications':
+        return (
+          <MedicationScreen
+            onBack={() => handleScreenTransition('dashboard')}
           />
         );
       

@@ -43,6 +43,20 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => {
       icon: '📝',
       description: 'تسجيل معلومات صحية جديدة',
       color: 'bg-blue-50 border-blue-100 hover:bg-blue-100'
+    },
+    {
+      id: 'growth-charts',
+      title: 'مخططات النمو',
+      icon: '📈',
+      description: 'متابعة نمو الطفل والمقارنة مع المعايير',
+      color: 'bg-orange-50 border-orange-100 hover:bg-orange-100'
+    },
+    {
+      id: 'medications',
+      title: 'إدارة الأدوية',
+      icon: '💊',
+      description: 'متابعة الأدوية وتذكير الجرعات',
+      color: 'bg-pink-50 border-pink-100 hover:bg-pink-100'
     }
   ];
 

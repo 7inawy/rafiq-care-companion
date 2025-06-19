@@ -1,12 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Layout/Header';
 import BottomNavigation from '@/components/Layout/BottomNavigation';
 import ChildSelector from './ChildSelector';
 import HealthSummaryCard from './HealthSummaryCard';
 import VaccinationSummaryCard from './VaccinationSummaryCard';
+import GrowthSummaryCard from './GrowthSummaryCard';
 import QuickActions from './QuickActions';
+import TodaysDosesCard from '@/components/Medication/TodaysDosesCard';
 import { generateVaccinationSchedule, getNextUpcomingVaccine, getVaccinesByStatus } from '@/utils/vaccinationLogic';
+import { getTodaysDoses } from '@/utils/medicationUtils';
+import { TodaysDose, Medication, DoseLog } from '@/types/medication';
 
 interface Child {
   id: string;
@@ -73,12 +76,41 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigate }) => {
     });
   };
 
+  // Mock medication data
+  const [medications] = useState<Medication[]>([]);
+  const [doseLogs, setDoseLogs] = useState<DoseLog[]>([]);
+  const [todaysDoses, setTodaysDoses] = useState<TodaysDose[]>([]);
+
+  useEffect(() => {
+    // Load today's doses
+    const doses = getTodaysDoses(medications, doseLogs, children);
+    setTodaysDoses(doses);
+  }, [medications, doseLogs]);
+
+  const handleMarkDoseAsGiven = (doseLogId: string) => {
+    setDoseLogs(prev => 
+      prev.map(log => 
+        log.id === doseLogId 
+          ? { ...log, status: 'given' as const, actualDateTime: new Date() }
+          : log
+      )
+    );
+  };
+
   const handleQuickAction = (actionId: string) => {
     onNavigate(actionId);
   };
 
   const handleNavigateToVaccinations = () => {
     onNavigate('vaccinations');
+  };
+
+  const handleNavigateToGrowthCharts = () => {
+    onNavigate('growth-charts');
+  };
+
+  const handleNavigateToMedications = () => {
+    onNavigate('medications');
   };
 
   return (
@@ -102,6 +134,13 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigate }) => {
         {/* Health Summary */}
         <HealthSummaryCard childName={selectedChild.name} />
 
+        {/* Today's Medication Doses */}
+        <TodaysDosesCard
+          doses={todaysDoses}
+          onMarkAsGiven={handleMarkDoseAsGiven}
+          onViewAll={handleNavigateToMedications}
+        />
+
         {/* Vaccination Summary */}
         <VaccinationSummaryCard
           childName={selectedChild.name}
@@ -109,6 +148,17 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigate }) => {
           completedCount={vaccinationData.completedCount}
           totalCount={vaccinationData.totalCount}
           onViewAll={handleNavigateToVaccinations}
+        />
+
+        {/* Growth Summary */}
+        <GrowthSummaryCard
+          childName={selectedChild.name}
+          lastMeasurement={{
+            date: new Date('2024-12-01'),
+            weight: 8.1,
+            height: 68.0
+          }}
+          onViewCharts={handleNavigateToGrowthCharts}
         />
 
         {/* Quick Actions */}
