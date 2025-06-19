@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -100,11 +101,19 @@ const MedicationScreen: React.FC<MedicationScreenProps> = ({ selectedChild, onBa
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header 
-        title="الأدوية والتذكيرات" 
-        showBack 
-        onBack={onBack}
-      />
+      <Header title="الأدوية والتذكيرات" />
+      
+      {/* Back Button */}
+      <div className="p-4 pb-0">
+        <Button
+          variant="ghost"
+          onClick={onBack}
+          className="flex items-center gap-2 p-2 -ml-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          العودة
+        </Button>
+      </div>
       
       <div className="p-4 space-y-6">
         {/* Child Info */}

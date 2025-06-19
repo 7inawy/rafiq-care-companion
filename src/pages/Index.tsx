@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import LoginScreen from '@/components/Auth/LoginScreen';
 import OTPScreen from '@/components/Auth/OTPScreen';
@@ -19,7 +20,8 @@ const Index = () => {
     id: '1',
     name: 'سارة',
     age: '6 أشهر',
-    birthDate: new Date('2024-06-01')
+    birthDate: new Date('2024-06-01'),
+    gender: 'female' as const
   });
 
   const handleScreenTransition = (screen: AppScreen, phone?: string) => {
@@ -101,6 +103,7 @@ const Index = () => {
       case 'growth-charts':
         return (
           <GrowthScreen
+            selectedChild={selectedChild}
             onBack={() => handleScreenTransition('dashboard')}
           />
         );
@@ -108,6 +111,7 @@ const Index = () => {
       case 'medications':
         return (
           <MedicationScreen
+            selectedChild={selectedChild}
             onBack={() => handleScreenTransition('dashboard')}
           />
         );

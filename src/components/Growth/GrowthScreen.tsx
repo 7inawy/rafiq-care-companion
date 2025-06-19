@@ -36,7 +36,7 @@ const GrowthScreen: React.FC<GrowthScreenProps> = ({ selectedChild, onBack }) =>
     },
     {
       id: '2',
-      childId: selectedChil.id,
+      childId: selectedChild.id,
       date: new Date('2024-09-01'),
       weight: 6.8,
       height: 62.5,
@@ -62,11 +62,19 @@ const GrowthScreen: React.FC<GrowthScreenProps> = ({ selectedChild, onBack }) =>
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header 
-        title="مخططات النمو" 
-        showBack 
-        onBack={onBack}
-      />
+      <Header title="مخططات النمو" />
+      
+      {/* Back Button */}
+      <div className="p-4 pb-0">
+        <Button
+          variant="ghost"
+          onClick={onBack}
+          className="flex items-center gap-2 p-2 -ml-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          العودة
+        </Button>
+      </div>
       
       <div className="p-4 space-y-6">
         {/* Child Info */}
