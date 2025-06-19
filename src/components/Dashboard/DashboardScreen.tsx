@@ -1,15 +1,18 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Layout/Header';
 import BottomNavigation from '@/components/Layout/BottomNavigation';
 import ChildSelector from './ChildSelector';
 import HealthSummaryCard from './HealthSummaryCard';
+import VaccinationSummaryCard from './VaccinationSummaryCard';
 import QuickActions from './QuickActions';
+import { generateVaccinationSchedule, getNextUpcomingVaccine, getVaccinesByStatus } from '@/utils/vaccinationLogic';
 
 interface Child {
   id: string;
   name: string;
   age: string;
+  birthDate?: Date;
   avatar?: string;
 }
 
@@ -22,12 +25,22 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigate }) => {
     id: '1',
     name: 'سارة',
     age: '6 أشهر',
+    birthDate: new Date('2024-06-01'),
     avatar: '/api/placeholder/40/40'
   });
 
+  const [vaccinationData, setVaccinationData] = useState<{
+    nextVaccine?: any;
+    completedCount: number;
+    totalCount: number;
+  }>({
+    completedCount: 0,
+    totalCount: 0
+  });
+
   const children: Child[] = [
-    { id: '1', name: 'سارة', age: '6 أشهر' },
-    { id: '2', name: 'أحمد', age: '3 سنوات' }
+    { id: '1', name: 'سارة', age: '6 أشهر', birthDate: new Date('2024-06-01') },
+    { id: '2', name: 'أحمد', age: '3 سنوات', birthDate: new Date('2021-01-15') }
   ];
 
   const navigationItems = [
@@ -38,8 +51,34 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigate }) => {
     { id: 'more', label: 'المزيد', icon: '⚙️' }
   ];
 
+  useEffect(() => {
+    loadVaccinationData();
+  }, [selectedChild.id]);
+
+  const loadVaccinationData = () => {
+    if (!selectedChild.birthDate) return;
+
+    const schedule = generateVaccinationSchedule(selectedChild.id, selectedChild.birthDate);
+    const vaccinesByStatus = getVaccinesByStatus(schedule);
+    const nextUpcoming = getNextUpcomingVaccine(schedule);
+
+    setVaccinationData({
+      nextVaccine: nextUpcoming ? {
+        name: nextUpcoming.vaccine.nameAr,
+        dueDate: nextUpcoming.record.dueDate,
+        status: nextUpcoming.record.status
+      } : undefined,
+      completedCount: vaccinesByStatus.done.length,
+      totalCount: schedule.records.length
+    });
+  };
+
   const handleQuickAction = (actionId: string) => {
     onNavigate(actionId);
+  };
+
+  const handleNavigateToVaccinations = () => {
+    onNavigate('vaccinations');
   };
 
   return (
@@ -52,13 +91,25 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigate }) => {
           <ChildSelector
             selectedChild={selectedChild}
             children={children}
-            onChildSelect={setSelectedChild}
+            onChildSelect={(child) => {
+              setSelectedChild(child);
+              loadVaccinationData();
+            }}
             onAddChild={() => onNavigate('add-child')}
           />
         </div>
 
         {/* Health Summary */}
         <HealthSummaryCard childName={selectedChild.name} />
+
+        {/* Vaccination Summary */}
+        <VaccinationSummaryCard
+          childName={selectedChild.name}
+          nextVaccine={vaccinationData.nextVaccine}
+          completedCount={vaccinationData.completedCount}
+          totalCount={vaccinationData.totalCount}
+          onViewAll={handleNavigateToVaccinations}
+        />
 
         {/* Quick Actions */}
         <div className="space-y-3">

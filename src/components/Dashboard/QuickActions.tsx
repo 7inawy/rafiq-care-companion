@@ -24,6 +24,13 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => {
       color: 'bg-red-50 border-red-100 hover:bg-red-100'
     },
     {
+      id: 'vaccinations',
+      title: 'متابعة التطعيمات',
+      icon: '💉',
+      description: 'جدول التطعيمات والمواعيد القادمة',
+      color: 'bg-green-50 border-green-100 hover:bg-green-100'
+    },
+    {
       id: 'add-record',
       title: 'إضافة سجل',
       icon: '📝',
@@ -35,13 +42,6 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => {
       title: 'حجز طبيب',
       icon: '👩‍⚕️',
       description: 'حجز موعد مع طبيب أطفال',
-      color: 'bg-green-50 border-green-100 hover:bg-green-100'
-    },
-    {
-      id: 'symptom-checker',
-      title: 'فاحص الأعراض',
-      icon: '🔍',
-      description: 'تحليل أعراض طفلك بالذكاء الاصطناعي',
       color: 'bg-purple-50 border-purple-100 hover:bg-purple-100'
     }
   ];

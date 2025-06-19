@@ -4,12 +4,19 @@ import LoginScreen from '@/components/Auth/LoginScreen';
 import OTPScreen from '@/components/Auth/OTPScreen';
 import DashboardScreen from '@/components/Dashboard/DashboardScreen';
 import NICUFinder from '@/components/NICU/NICUFinder';
+import VaccinationScreen from '@/components/Vaccination/VaccinationScreen';
 
-type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'add-record' | 'book-doctor' | 'symptom-checker';
+type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'vaccinations' | 'add-record' | 'book-doctor' | 'symptom-checker';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('login');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [selectedChild] = useState({
+    id: '1',
+    name: 'سارة',
+    age: '6 أشهر',
+    birthDate: new Date('2024-06-01')
+  });
 
   const handleScreenTransition = (screen: AppScreen, phone?: string) => {
     setCurrentScreen(screen);
@@ -45,6 +52,14 @@ const Index = () => {
         return (
           <NICUFinder 
             onBack={() => handleScreenTransition('dashboard')}
+          />
+        );
+
+      case 'vaccinations':
+        return (
+          <VaccinationScreen
+            onBack={() => handleScreenTransition('dashboard')}
+            selectedChild={selectedChild}
           />
         );
       
