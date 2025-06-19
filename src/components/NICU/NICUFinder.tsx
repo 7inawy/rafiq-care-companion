@@ -1,10 +1,12 @@
 
-import React, { useState } from 'react';
-import { Search, MapPin, Phone, Navigation, Filter } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Search, MapPin, Phone, Navigation, Filter, RefreshCw, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useQuery } from '@tanstack/react-query';
 import Header from '@/components/Layout/Header';
 
 interface Hospital {
@@ -17,17 +19,21 @@ interface Hospital {
   rating: number;
   type: 'government' | 'private';
   cost: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 interface NICUFinderProps {
   onBack: () => void;
 }
 
-const NICUFinder: React.FC<NICUFinderProps> = ({ onBack }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
-
-  const hospitals: Hospital[] = [
+// Mock API function - replace with actual API call
+const fetchHospitals = async (): Promise<Hospital[]> => {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  // Mock data - replace with actual API call
+  return [
     {
       id: '1',
       name: 'مستشفى أبو الريش الياباني',
@@ -37,7 +43,9 @@ const NICUFinder: React.FC<NICUFinderProps> = ({ onBack }) => {
       distance: '2.5 كم',
       rating: 4.8,
       type: 'government',
-      cost: 'مجاني'
+      cost: 'مجاني',
+      latitude: 30.0444,
+      longitude: 31.2357
     },
     {
       id: '2',
@@ -48,7 +56,9 @@ const NICUFinder: React.FC<NICUFinderProps> = ({ onBack }) => {
       distance: '12 كم',
       rating: 4.6,
       type: 'government',
-      cost: 'مجاني'
+      cost: 'مجاني',
+      latitude: 30.0131,
+      longitude: 30.9748
     },
     {
       id: '3',
@@ -59,9 +69,75 @@ const NICUFinder: React.FC<NICUFinderProps> = ({ onBack }) => {
       distance: '8.3 كم',
       rating: 4.9,
       type: 'private',
-      cost: '1500-3000 ج.م'
+      cost: '1500-3000 ج.م',
+      latitude: 30.0626,
+      longitude: 31.3219
+    },
+    {
+      id: '4',
+      name: 'مستشفى كليوباترا',
+      address: 'المعادي، القاهرة',
+      phone: '01234567893',
+      availability: 'full',
+      distance: '15.2 كم',
+      rating: 4.7,
+      type: 'private',
+      cost: '2000-4000 ج.م',
+      latitude: 29.9602,
+      longitude: 31.2569
+    },
+    {
+      id: '5',
+      name: 'مستشفى قصر العيني',
+      address: 'قصر العيني، القاهرة',
+      phone: '01234567894',
+      availability: 'available',
+      distance: '5.8 كم',
+      rating: 4.5,
+      type: 'government',
+      cost: 'مجاني',
+      latitude: 30.0444,
+      longitude: 31.2357
     }
   ];
+};
+
+const NICUFinder: React.FC<NICUFinderProps> = ({ onBack }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedType, setSelectedType] = useState<'all' | 'government' | 'private'>('all');
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+
+  // Fetch hospitals data using React Query
+  const { 
+    data: hospitals = [], 
+    isLoading, 
+    error, 
+    refetch 
+  } = useQuery({
+    queryKey: ['hospitals'],
+    queryFn: fetchHospitals,
+  });
+
+  // Filter and search logic
+  const filteredHospitals = useMemo(() => {
+    let filtered = hospitals;
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(hospital =>
+        hospital.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        hospital.address.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Filter by type
+    if (selectedType !== 'all') {
+      filtered = filtered.filter(hospital => hospital.type === selectedType);
+    }
+
+    return filtered;
+  }, [hospitals, searchQuery, selectedType]);
 
   const getAvailabilityBadge = (availability: string) => {
     switch (availability) {
@@ -75,6 +151,86 @@ const NICUFinder: React.FC<NICUFinderProps> = ({ onBack }) => {
         return null;
     }
   };
+
+  const handleDirections = (address: string) => {
+    const encodedAddress = encodeURIComponent(address);
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+    window.open(googleMapsUrl, '_blank');
+  };
+
+  const handleCall = (phone: string) => {
+    window.open(`tel:${phone}`);
+  };
+
+  // Loading skeleton component
+  const HospitalSkeleton = () => (
+    <Card className="shadow-sm">
+      <CardContent className="p-4">
+        <div className="space-y-3">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-5 w-3/4" />
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            </div>
+            <Skeleton className="h-6 w-16" />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-4 w-12" />
+              <Skeleton className="h-4 w-12" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Skeleton className="h-8 flex-1" />
+            <Skeleton className="h-8 flex-1" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  // Error state component
+  const ErrorState = () => (
+    <Card className="shadow-sm">
+      <CardContent className="p-8 text-center">
+        <div className="space-y-4">
+          <div className="w-16 h-16 bg-red-100 rounded-full mx-auto flex items-center justify-center">
+            <span className="text-2xl text-red-600">⚠️</span>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">خطأ في تحميل البيانات</h3>
+            <p className="text-gray-600 mb-4">عذراً، حدث خطأ أثناء تحميل قائمة المستشفيات</p>
+            <Button onClick={() => refetch()} className="flex items-center gap-2">
+              <RefreshCw className="h-4 w-4" />
+              إعادة المحاولة
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  // Simple map placeholder - replace with actual map implementation
+  const MapView = () => (
+    <Card className="shadow-sm">
+      <CardContent className="p-8 text-center">
+        <div className="space-y-4">
+          <div className="w-16 h-16 bg-blue-100 rounded-full mx-auto flex items-center justify-center">
+            <Map className="h-8 w-8 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">عرض الخريطة</h3>
+            <p className="text-gray-600 mb-4">سيتم تطبيق عرض الخريطة التفاعلية قريباً</p>
+            <p className="text-sm text-gray-500">عدد المستشفيات الظاهرة: {filteredHospitals.length}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -93,7 +249,7 @@ const NICUFinder: React.FC<NICUFinderProps> = ({ onBack }) => {
             />
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button
               variant="outline"
               size="sm"
@@ -103,9 +259,41 @@ const NICUFinder: React.FC<NICUFinderProps> = ({ onBack }) => {
               <Filter className="h-4 w-4" />
               تصفية
             </Button>
-            <Button variant="outline" size="sm">حكومي</Button>
-            <Button variant="outline" size="sm">خاص</Button>
+            <Button 
+              variant={selectedType === 'government' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setSelectedType(selectedType === 'government' ? 'all' : 'government')}
+            >
+              حكومي
+            </Button>
+            <Button 
+              variant={selectedType === 'private' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setSelectedType(selectedType === 'private' ? 'all' : 'private')}
+            >
+              خاص
+            </Button>
           </div>
+        </div>
+
+        {/* View Toggle */}
+        <div className="flex gap-2">
+          <Button
+            variant={viewMode === 'list' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setViewMode('list')}
+            className="flex-1"
+          >
+            عرض القائمة
+          </Button>
+          <Button
+            variant={viewMode === 'map' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setViewMode('map')}
+            className="flex-1"
+          >
+            عرض الخريطة
+          </Button>
         </div>
 
         {/* Emergency Alert */}
@@ -123,70 +311,104 @@ const NICUFinder: React.FC<NICUFinderProps> = ({ onBack }) => {
           </CardContent>
         </Card>
 
-        {/* Hospital List */}
+        {/* Content Area */}
         <div className="space-y-3">
-          {hospitals.map((hospital) => (
-            <Card key={hospital.id} className="shadow-sm">
-              <CardContent className="p-4">
-                <div className="space-y-3">
-                  {/* Header */}
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">{hospital.name}</h3>
-                      <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                        <MapPin className="h-4 w-4" />
-                        <span>{hospital.address}</span>
-                        <span className="text-primary">• {hospital.distance}</span>
+          {/* Loading State */}
+          {isLoading && (
+            <>
+              {[...Array(3)].map((_, index) => (
+                <HospitalSkeleton key={index} />
+              ))}
+            </>
+          )}
+
+          {/* Error State */}
+          {error && <ErrorState />}
+
+          {/* Map View */}
+          {!isLoading && !error && viewMode === 'map' && <MapView />}
+
+          {/* List View */}
+          {!isLoading && !error && viewMode === 'list' && (
+            <>
+              {filteredHospitals.length === 0 ? (
+                <Card className="shadow-sm">
+                  <CardContent className="p-8 text-center">
+                    <div className="space-y-4">
+                      <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto flex items-center justify-center">
+                        <Search className="h-8 w-8 text-gray-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">لا توجد نتائج</h3>
+                        <p className="text-gray-600">لم يتم العثور على مستشفيات تطابق معايير البحث</p>
                       </div>
                     </div>
-                    {getAvailabilityBadge(hospital.availability)}
-                  </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                filteredHospitals.map((hospital) => (
+                  <Card key={hospital.id} className="shadow-sm">
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        {/* Header */}
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900">{hospital.name}</h3>
+                            <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+                              <MapPin className="h-4 w-4" />
+                              <span>{hospital.address}</span>
+                              <span className="text-primary">• {hospital.distance}</span>
+                            </div>
+                          </div>
+                          {getAvailabilityBadge(hospital.availability)}
+                        </div>
 
-                  {/* Details */}
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-4">
-                      <span className="text-yellow-500">★ {hospital.rating}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {hospital.type === 'government' ? 'حكومي' : 'خاص'}
-                      </Badge>
-                      <span className="text-gray-600">التكلفة: {hospital.cost}</span>
-                    </div>
-                  </div>
+                        {/* Details */}
+                        <div className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-4">
+                            <span className="text-yellow-500">★ {hospital.rating}</span>
+                            <Badge variant="outline" className="text-xs">
+                              {hospital.type === 'government' ? 'حكومي' : 'خاص'}
+                            </Badge>
+                            <span className="text-gray-600">التكلفة: {hospital.cost}</span>
+                          </div>
+                        </div>
 
-                  {/* Actions */}
-                  <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      className="flex-1 bg-primary hover:bg-primary/90"
-                      onClick={() => window.open(`tel:${hospital.phone}`)}
-                    >
-                      <Phone className="h-4 w-4 ml-2" />
-                      اتصال
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="flex-1"
-                      onClick={() => window.open(`https://maps.google.com/search/${encodeURIComponent(hospital.address)}`)}
-                    >
-                      <Navigation className="h-4 w-4 ml-2" />
-                      الاتجاهات
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                        {/* Actions */}
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            className="flex-1 bg-primary hover:bg-primary/90"
+                            onClick={() => handleCall(hospital.phone)}
+                          >
+                            <Phone className="h-4 w-4 ml-2" />
+                            اتصال
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="flex-1"
+                            onClick={() => handleDirections(hospital.address)}
+                          >
+                            <Navigation className="h-4 w-4 ml-2" />
+                            الاتجاهات
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </>
+          )}
         </div>
 
-        {/* Map View Button */}
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={() => {/* TODO: Implement map view */}}
-        >
-          عرض الخريطة
-        </Button>
+        {/* Results Summary */}
+        {!isLoading && !error && viewMode === 'list' && filteredHospitals.length > 0 && (
+          <div className="text-center text-sm text-gray-500 py-4">
+            عرض {filteredHospitals.length} من {hospitals.length} مستشفى
+          </div>
+        )}
       </div>
     </div>
   );
