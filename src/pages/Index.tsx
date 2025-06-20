@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import LoginScreen from '@/components/Auth/LoginScreen';
 import OTPScreen from '@/components/Auth/OTPScreen';
@@ -9,8 +8,10 @@ import DoctorDirectoryScreen from '@/components/Doctor/DoctorDirectoryScreen';
 import DoctorProfileScreen from '@/components/Doctor/DoctorProfileScreen';
 import GrowthScreen from '@/components/Growth/GrowthScreen';
 import MedicationScreen from '@/components/Medication/MedicationScreen';
+import SymptomCheckerScreen from '@/components/SymptomChecker/SymptomCheckerScreen';
+import ResultsScreen from '@/components/SymptomChecker/ResultsScreen';
 
-type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'vaccinations' | 'add-record' | 'book-doctor' | 'symptom-checker' | 'doctor-directory' | 'doctor-profile' | 'book-appointment' | 'growth-charts' | 'medications';
+type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'vaccinations' | 'add-record' | 'book-doctor' | 'symptom-checker' | 'symptom-results' | 'doctor-directory' | 'doctor-profile' | 'book-appointment' | 'growth-charts' | 'medications';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('login');
@@ -77,6 +78,20 @@ const Index = () => {
           <VaccinationScreen
             onBack={() => handleScreenTransition('dashboard')}
             selectedChild={selectedChild}
+          />
+        );
+
+      case 'symptom-checker':
+        return (
+          <SymptomCheckerScreen
+            onBack={() => handleScreenTransition('dashboard')}
+          />
+        );
+
+      case 'symptom-results':
+        return (
+          <ResultsScreen
+            onBack={() => handleScreenTransition('symptom-checker')}
           />
         );
 

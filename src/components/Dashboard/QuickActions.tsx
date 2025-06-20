@@ -24,6 +24,13 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => {
       color: 'bg-red-50 border-red-100 hover:bg-red-100'
     },
     {
+      id: 'symptom-checker',
+      title: 'محلل الأعراض',
+      icon: '🔍',
+      description: 'تحليل ذكي لأعراض طفلك والحصول على نصائح',
+      color: 'bg-teal-50 border-teal-100 hover:bg-teal-100'
+    },
+    {
       id: 'vaccinations',
       title: 'متابعة التطعيمات',
       icon: '💉',
