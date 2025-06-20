@@ -31,6 +31,13 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => {
       color: 'bg-teal-50 border-teal-100 hover:bg-teal-100'
     },
     {
+      id: 'sensory-hub',
+      title: 'دعم الاضطرابات الحسية',
+      icon: '🤗',
+      description: 'موارد ومختصين للاضطرابات الحسية',
+      color: 'bg-indigo-50 border-indigo-100 hover:bg-indigo-100'
+    },
+    {
       id: 'vaccinations',
       title: 'متابعة التطعيمات',
       icon: '💉',
@@ -45,13 +52,6 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => {
       color: 'bg-purple-50 border-purple-100 hover:bg-purple-100'
     },
     {
-      id: 'add-record',
-      title: 'إضافة سجل',
-      icon: '📝',
-      description: 'تسجيل معلومات صحية جديدة',
-      color: 'bg-blue-50 border-blue-100 hover:bg-blue-100'
-    },
-    {
       id: 'growth-charts',
       title: 'مخططات النمو',
       icon: '📈',
@@ -64,6 +64,13 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => {
       icon: '💊',
       description: 'متابعة الأدوية وتذكير الجرعات',
       color: 'bg-pink-50 border-pink-100 hover:bg-pink-100'
+    },
+    {
+      id: 'add-record',
+      title: 'إضافة سجل',
+      icon: '📝',
+      description: 'تسجيل معلومات صحية جديدة',
+      color: 'bg-blue-50 border-blue-100 hover:bg-blue-100'
     }
   ];
 
@@ -87,4 +94,6 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => {
   );
 };
 
-export default QuickActions;
+export default Quick
+
+Actions;

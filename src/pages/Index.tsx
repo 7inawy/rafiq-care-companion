@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import LoginScreen from '@/components/Auth/LoginScreen';
 import OTPScreen from '@/components/Auth/OTPScreen';
@@ -11,8 +10,12 @@ import GrowthScreen from '@/components/Growth/GrowthScreen';
 import MedicationScreen from '@/components/Medication/MedicationScreen';
 import SymptomCheckerScreen from '@/components/SymptomChecker/SymptomCheckerScreen';
 import ResultsScreen from '@/components/SymptomChecker/ResultsScreen';
+import SensoryHubScreen from '@/components/Sensory/SensoryHubScreen';
+import SensoryVideoScreen from '@/components/Sensory/SensoryVideoScreen';
+import SensoryArticlesScreen from '@/components/Sensory/SensoryArticlesScreen';
+import SensorySpecialistScreen from '@/components/Sensory/SensorySpecialistScreen';
 
-type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'vaccinations' | 'add-record' | 'book-doctor' | 'symptom-checker' | 'symptom-results' | 'doctor-directory' | 'doctor-profile' | 'book-appointment' | 'growth-charts' | 'medications';
+type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'vaccinations' | 'add-record' | 'book-doctor' | 'symptom-checker' | 'symptom-results' | 'doctor-directory' | 'doctor-profile' | 'book-appointment' | 'growth-charts' | 'medications' | 'sensory-hub' | 'sensory-videos' | 'sensory-articles' | 'sensory-specialists';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('login');
@@ -44,6 +47,28 @@ const Index = () => {
 
   const handleFindDoctor = () => {
     setCurrentScreen('doctor-directory');
+  };
+
+  const handleSensoryNavigation = (screen: string) => {
+    switch (screen) {
+      case 'articles':
+        setCurrentScreen('sensory-articles');
+        break;
+      case 'videos':
+        setCurrentScreen('sensory-videos');
+        break;
+      case 'specialists':
+        setCurrentScreen('sensory-specialists');
+        break;
+      case 'activities':
+        // TODO: Implement activities screen
+        break;
+      case 'sensory-assessment':
+        // TODO: Implement assessment screen
+        break;
+      default:
+        break;
+    }
   };
 
   const renderScreen = () => {
@@ -106,6 +131,43 @@ const Index = () => {
             answers={symptomCheckerAnswers}
             onBack={() => handleScreenTransition('symptom-checker')}
             onFindDoctor={handleFindDoctor}
+          />
+        );
+
+      case 'sensory-hub':
+        return (
+          <SensoryHubScreen
+            onNavigate={handleSensoryNavigation}
+            onBack={() => handleScreenTransition('dashboard')}
+          />
+        );
+
+      case 'sensory-videos':
+        return (
+          <SensoryVideoScreen
+            onBack={() => handleScreenTransition('sensory-hub')}
+          />
+        );
+
+      case 'sensory-articles':
+        return (
+          <SensoryArticlesScreen
+            onBack={() => handleScreenTransition('sensory-hub')}
+            onNavigateToArticle={(articleId) => {
+              // TODO: Implement article reader
+              console.log('Navigate to article:', articleId);
+            }}
+          />
+        );
+
+      case 'sensory-specialists':
+        return (
+          <SensorySpecialistScreen
+            onBack={() => handleScreenTransition('sensory-hub')}
+            onNavigateToProfile={(specialistId) => {
+              // TODO: Implement specialist profile
+              console.log('Navigate to specialist:', specialistId);
+            }}
           />
         );
 
