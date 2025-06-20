@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Bell, Settings, ChevronDown } from 'lucide-react';
+import { Bell, Settings, ChevronDown, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -14,19 +14,31 @@ import {
 interface HeaderProps {
   title: string;
   showProfile?: boolean;
+  onBack?: () => void;
   onNotificationClick?: () => void;
   onSettingsClick?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
   title, 
-  showProfile = true, 
+  showProfile = true,
+  onBack,
   onNotificationClick,
   onSettingsClick 
 }) => {
   return (
     <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
       <div className="flex items-center gap-3">
+        {onBack && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="p-2"
+            onClick={onBack}
+          >
+            <ArrowLeft className="h-5 w-5 text-gray-600" />
+          </Button>
+        )}
         <h1 className="text-xl font-bold text-gray-900">{title}</h1>
       </div>
       

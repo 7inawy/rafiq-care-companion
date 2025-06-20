@@ -94,6 +94,4 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => {
   );
 };
 
-export default Quick
-
-Actions;
+export default QuickActions;
