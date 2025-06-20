@@ -71,6 +71,13 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => {
       icon: '📝',
       description: 'تسجيل معلومات صحية جديدة',
       color: 'bg-blue-50 border-blue-100 hover:bg-blue-100'
+    },
+    {
+      id: 'marketplace',
+      title: 'المتجر',
+      icon: '🛍️',
+      description: 'منتجات مخصصة لصحة الطفل',
+      color: 'bg-purple-50 border-purple-100 hover:bg-purple-100'
     }
   ];
 

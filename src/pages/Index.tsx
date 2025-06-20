@@ -14,6 +14,7 @@ import SensoryHubScreen from '@/components/Sensory/SensoryHubScreen';
 import SensoryVideoScreen from '@/components/Sensory/SensoryVideoScreen';
 import SensoryArticlesScreen from '@/components/Sensory/SensoryArticlesScreen';
 import SensorySpecialistScreen from '@/components/Sensory/SensorySpecialistScreen';
+import React, { lazy, Suspense } from 'react';
 
 type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'vaccinations' | 'add-record' | 'book-doctor' | 'symptom-checker' | 'symptom-results' | 'doctor-directory' | 'doctor-profile' | 'book-appointment' | 'growth-charts' | 'medications' | 'sensory-hub' | 'sensory-videos' | 'sensory-articles' | 'sensory-specialists';
 
@@ -29,6 +30,10 @@ const Index = () => {
     birthDate: new Date('2024-06-01'),
     gender: 'female' as const
   });
+
+  // Marketplace state
+  const [cartItems, setCartItems] = useState<import('@/types/marketplace').CartItem[]>([]);
+  const [selectedProductId, setSelectedProductId] = useState<string>('');
 
   const handleScreenTransition = (screen: AppScreen, phone?: string) => {
     setCurrentScreen(screen);
@@ -207,6 +212,74 @@ const Index = () => {
           />
         );
       
+      case 'marketplace-home':
+        const MarketplaceHomeScreen = React.lazy(() => import('@/components/Marketplace/MarketplaceHomeScreen'));
+        return (
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <MarketplaceHomeScreen
+              onProductClick={(productId) => {
+                setSelectedProductId(productId);
+                handleScreenTransition('marketplace-product-detail');
+              }}
+              onCartClick={() => handleScreenTransition('marketplace-cart')}
+              onAddToCart={handleAddToCart}
+              cartItemCount={cartItemCount}
+            />
+          </React.Suspense>
+        );
+
+      case 'marketplace-product-detail':
+        const ProductDetailScreen = React.lazy(() => import('@/components/Marketplace/ProductDetailScreen'));
+        return (
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <ProductDetailScreen
+              productId={selectedProductId}
+              onBack={() => handleScreenTransition('marketplace-home')}
+              onAddToCart={handleAddToCart}
+            />
+          </React.Suspense>
+        );
+
+      case 'marketplace-cart':
+        const ShoppingCartScreen = React.lazy(() => import('@/components/Marketplace/ShoppingCartScreen'));
+        return (
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <ShoppingCartScreen
+              cartItems={cartItems}
+              onBack={() => handleScreenTransition('marketplace-home')}
+              onUpdateQuantity={handleUpdateCartQuantity}
+              onRemoveItem={handleRemoveFromCart}
+              onCheckout={() => handleScreenTransition('marketplace-checkout')}
+            />
+          </React.Suspense>
+        );
+
+      case 'marketplace-checkout':
+        const CheckoutFlowScreen = React.lazy(() => import('@/components/Marketplace/CheckoutFlowScreen'));
+        return (
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <CheckoutFlowScreen
+              cartItems={cartItems}
+              onBack={() => handleScreenTransition('marketplace-cart')}
+              onOrderComplete={() => {
+                setCartItems([]); // Clear cart
+                handleScreenTransition('marketplace-confirmation');
+              }}
+            />
+          </React.Suspense>
+        );
+
+      case 'marketplace-confirmation':
+        const OrderConfirmationScreen = React.lazy(() => import('@/components/Marketplace/OrderConfirmationScreen'));
+        return (
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <OrderConfirmationScreen
+              onBackToMarketplace={() => handleScreenTransition('marketplace-home')}
+              onBackToDashboard={() => handleScreenTransition('dashboard')}
+            />
+          </React.Suspense>
+        );
+
       default:
         return (
           <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -229,6 +302,8 @@ const Index = () => {
         );
     }
   };
+
+  const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="font-arabic" dir="rtl">
