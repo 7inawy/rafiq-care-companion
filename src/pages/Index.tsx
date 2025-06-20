@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import LoginScreen from '@/components/Auth/LoginScreen';
 import OTPScreen from '@/components/Auth/OTPScreen';
@@ -14,9 +15,9 @@ import SensoryHubScreen from '@/components/Sensory/SensoryHubScreen';
 import SensoryVideoScreen from '@/components/Sensory/SensoryVideoScreen';
 import SensoryArticlesScreen from '@/components/Sensory/SensoryArticlesScreen';
 import SensorySpecialistScreen from '@/components/Sensory/SensorySpecialistScreen';
-import React, { lazy, Suspense } from 'react';
+import { CartItem, Product } from '@/types/marketplace';
 
-type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'vaccinations' | 'add-record' | 'book-doctor' | 'symptom-checker' | 'symptom-results' | 'doctor-directory' | 'doctor-profile' | 'book-appointment' | 'growth-charts' | 'medications' | 'sensory-hub' | 'sensory-videos' | 'sensory-articles' | 'sensory-specialists';
+type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'vaccinations' | 'add-record' | 'book-doctor' | 'symptom-checker' | 'symptom-results' | 'doctor-directory' | 'doctor-profile' | 'book-appointment' | 'growth-charts' | 'medications' | 'sensory-hub' | 'sensory-videos' | 'sensory-articles' | 'sensory-specialists' | 'marketplace-home' | 'marketplace-product-detail' | 'marketplace-cart' | 'marketplace-checkout' | 'marketplace-confirmation';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('login');
@@ -32,8 +33,38 @@ const Index = () => {
   });
 
   // Marketplace state
-  const [cartItems, setCartItems] = useState<import('@/types/marketplace').CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>('');
+
+  // Cart handler functions
+  const handleAddToCart = (product: Product) => {
+    setCartItems(prevItems => {
+      const existingItem = prevItems.find(item => item.product.id === product.id);
+      if (existingItem) {
+        return prevItems.map(item =>
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        return [...prevItems, { product, quantity: 1 }];
+      }
+    });
+  };
+
+  const handleUpdateCartQuantity = (productId: string, quantity: number) => {
+    setCartItems(prevItems =>
+      prevItems.map(item =>
+        item.product.id === productId
+          ? { ...item, quantity }
+          : item
+      )
+    );
+  };
+
+  const handleRemoveFromCart = (productId: string) => {
+    setCartItems(prevItems => prevItems.filter(item => item.product.id !== productId));
+  };
 
   const handleScreenTransition = (screen: AppScreen, phone?: string) => {
     setCurrentScreen(screen);
@@ -100,6 +131,8 @@ const Index = () => {
             onNavigate={(screen) => {
               if (screen === 'book-doctor') {
                 handleScreenTransition('doctor-directory');
+              } else if (screen === 'marketplace') {
+                handleScreenTransition('marketplace-home');
               } else {
                 handleScreenTransition(screen as AppScreen);
               }
