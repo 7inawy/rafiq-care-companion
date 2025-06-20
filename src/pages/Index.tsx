@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import LoginScreen from '@/components/Auth/LoginScreen';
 import OTPScreen from '@/components/Auth/OTPScreen';
@@ -17,6 +18,7 @@ const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('login');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedDoctorId, setSelectedDoctorId] = useState<string>('');
+  const [symptomCheckerAnswers, setSymptomCheckerAnswers] = useState<Record<string, string>>({});
   const [selectedChild] = useState({
     id: '1',
     name: 'سارة',
@@ -33,6 +35,15 @@ const Index = () => {
   const handleDoctorSelect = (doctorId: string) => {
     setSelectedDoctorId(doctorId);
     setCurrentScreen('doctor-profile');
+  };
+
+  const handleSymptomCheckerResults = (answers: Record<string, string>) => {
+    setSymptomCheckerAnswers(answers);
+    setCurrentScreen('symptom-results');
+  };
+
+  const handleFindDoctor = () => {
+    setCurrentScreen('doctor-directory');
   };
 
   const renderScreen = () => {
@@ -85,13 +96,16 @@ const Index = () => {
         return (
           <SymptomCheckerScreen
             onBack={() => handleScreenTransition('dashboard')}
+            onGoToResults={handleSymptomCheckerResults}
           />
         );
 
       case 'symptom-results':
         return (
           <ResultsScreen
+            answers={symptomCheckerAnswers}
             onBack={() => handleScreenTransition('symptom-checker')}
+            onFindDoctor={handleFindDoctor}
           />
         );
 
