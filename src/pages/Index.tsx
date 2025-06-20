@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import LoginScreen from '@/components/Auth/LoginScreen';
 import OTPScreen from '@/components/Auth/OTPScreen';
@@ -15,6 +14,7 @@ import SensoryHubScreen from '@/components/Sensory/SensoryHubScreen';
 import SensoryVideoScreen from '@/components/Sensory/SensoryVideoScreen';
 import SensoryArticlesScreen from '@/components/Sensory/SensoryArticlesScreen';
 import SensorySpecialistScreen from '@/components/Sensory/SensorySpecialistScreen';
+import AppointmentBookingScreen from '@/components/Doctor/AppointmentBookingScreen';
 import { CartItem, Product } from '@/types/marketplace';
 
 type AppScreen = 'login' | 'otp' | 'dashboard' | 'nicu-finder' | 'vaccinations' | 'add-record' | 'book-doctor' | 'symptom-checker' | 'symptom-results' | 'doctor-directory' | 'doctor-profile' | 'book-appointment' | 'growth-charts' | 'medications' | 'sensory-hub' | 'sensory-videos' | 'sensory-articles' | 'sensory-specialists' | 'marketplace-home' | 'marketplace-product-detail' | 'marketplace-cart' | 'marketplace-checkout' | 'marketplace-confirmation';
@@ -228,7 +228,19 @@ const Index = () => {
             }}
           />
         );
-      
+
+      case 'book-appointment':
+        return (
+          <AppointmentBookingScreen
+            doctorId={selectedDoctorId}
+            onBack={() => handleScreenTransition('doctor-profile')}
+            onBookingComplete={() => {
+              // Show success message and navigate back
+              handleScreenTransition('dashboard');
+            }}
+          />
+        );
+
       case 'growth-charts':
         return (
           <GrowthScreen
